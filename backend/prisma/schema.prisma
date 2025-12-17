@@ -1,0 +1,57 @@
+// prisma/schema.prisma
+
+generator client {
+  provider   = "prisma-client"
+  output     = "./generated"
+  engineType = "client"
+  runtime    = "bun"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  name      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  tasks Task[]
+}
+
+model Task {
+  id          String   @id @default(uuid())
+  title       String
+  description String?
+  status      String   @default("todo") // todo, in_progress, done
+  order       Int      @default(0) // For sorting subtasks
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // User relation
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Self-relation for subtasks
+  parentId String?
+  parent   Task?   @relation("TaskSubtasks", fields: [parentId], references: [id], onDelete: Cascade)
+  subtasks Task[]  @relation("TaskSubtasks")
+
+  // Tags relation
+  tags Tag[]
+
+  @@index([userId])
+  @@index([parentId])
+}
+
+model Tag {
+  id        String   @id @default(uuid())
+  name      String   @unique
+  color     String?
+  createdAt DateTime @default(now())
+
+  tasks Task[]
+}

@@ -1,0 +1,40 @@
+services:
+  postgres:
+    networks:
+      - devtask-network
+    image: postgres:15-alpine
+    container_name: devtask-postgres
+    restart: always
+    environment:
+      POSTGRES_USER: devtask_user
+      POSTGRES_PASSWORD: devtask_password
+      POSTGRES_DB: devtask_db
+    ports:
+      - '5433:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U devtask_user']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Optional: pgAdmin for visual database management
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: devtask-pgadmin
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@devtask.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - '5050:80'
+    depends_on:
+      - postgres
+
+networks:
+  devtask-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
