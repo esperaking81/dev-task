@@ -19,7 +19,8 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  tasks Task[]
+  tasks         Task[] @relation("TaskUser")
+  assignedTasks Task[] @relation("TaskAssignee")
 }
 
 model Task {
@@ -28,12 +29,18 @@ model Task {
   description String?
   status      String   @default("todo") // todo, in_progress, done
   order       Int      @default(0) // For sorting subtasks
+  dueDate     DateTime?
+  priority    String   @default("medium")
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
   // User relation
   userId String
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user   User   @relation("TaskUser", fields: [userId], references: [id], onDelete: Cascade)
+
+  // Assignee relation
+  assigneeId String?
+  assignee   User?   @relation("TaskAssignee", fields: [assigneeId], references: [id])
 
   // Self-relation for subtasks
   parentId String?
@@ -44,6 +51,7 @@ model Task {
   tags Tag[]
 
   @@index([userId])
+  @@index([assigneeId])
   @@index([parentId])
 }
 

@@ -1,7 +1,14 @@
 import { HttpService } from '@nestjs/axios';
 import { Injectable, Logger } from '@nestjs/common';
-import { Task } from '@prisma/client';
+import { TaskPriority } from '../tasks/dto/task.dto';
 import { firstValueFrom } from 'rxjs';
+
+export interface BreakdownSuggestion {
+  title: string;
+  description?: string;
+  priority: string;
+  order: number;
+}
 
 const getBaseUrl = () =>
   process.env.ANTROPIC_URL || 'https://api.anthropic.com/v1';
@@ -29,7 +36,7 @@ export class AiService {
 
   constructor(private readonly httpService: HttpService) {}
 
-  async breakdownTask(task: string): Promise<Partial<Task>[]> {
+  async breakdownTask(task: string): Promise<BreakdownSuggestion[]> {
     const baseUrl = getBaseUrl();
     const apiKey = getApiKey();
 
@@ -99,18 +106,20 @@ Keep descriptions concise. Do not ask follow-up questions or offer to expand on 
     return data.content[0].text;
   }
 
-  private parseResponse(response: string): Partial<Task>[] {
-    const tasks: Partial<Task>[] = [];
+  private parseResponse(response: string): BreakdownSuggestion[] {
+    const tasks: BreakdownSuggestion[] = [];
     const regex = /## (\d+)\.\s*(.+?)\n([^#]+)/g;
 
     let match: RegExpExecArray | null;
+    let order = 1;
     while ((match = regex.exec(response)) !== null) {
-      const [, orderStr, title, description] = match;
+      const [, , title, description] = match;
 
-      const task: Partial<Task> = {
+      const task: BreakdownSuggestion = {
         title: title.trim(),
         description: description.trim(),
-        order: parseInt(orderStr, 10),
+        order: order++,
+        priority: TaskPriority.MEDIUM,
       };
 
       tasks.push(task);

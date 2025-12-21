@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from '../prisma/prisma.service';
 import * as bcrypt from 'bcrypt';
-import { User } from 'prisma/genrated/client';
+import { User } from 'prisma/generated/client';
 
 // Create a constant for user selection without password
 export const userSelectWithoutPassword = {
@@ -47,10 +47,22 @@ export class AuthService {
 
   async login(user: Partial<User>): Promise<{
     access_token: string;
+    user: {
+      id: string;
+      name: string;
+      email: string;
+    };
   }> {
     const payload = { email: user.email, sub: user.id };
+    const token = await this.jwtService.signAsync(payload);
+
     return {
-      access_token: await this.jwtService.signAsync(payload),
+      access_token: token,
+      user: {
+        id: user.id!,
+        name: user.name!,
+        email: user.email!,
+      },
     };
   }
 

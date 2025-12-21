@@ -18,7 +18,12 @@ import {
   ApiBearerAuth,
 } from '@nestjs/swagger';
 import { TasksService } from './tasks.service';
-import { CreateTaskDto, UpdateTaskDto, TaskStatus } from './dto/task.dto';
+import {
+  CreateTaskDto,
+  UpdateTaskDto,
+  TaskStatus,
+  AcceptBreakdownDto,
+} from './dto/task.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import type { AuthenticatedRequest } from '../common/types/auth.types';
 
@@ -76,11 +81,50 @@ export class TasksController {
   }
 
   @Post(':id/break-down')
-  @ApiOperation({ summary: 'Break down a task into subtasks using AI' })
-  @ApiResponse({ status: 200, description: 'Task broken down successfully' })
+  @ApiOperation({
+    summary: 'Generate breakdown suggestions for a task using AI',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Breakdown suggestions generated or retrieved',
+  })
   @ApiResponse({ status: 404, description: 'Task not found' })
+  @ApiResponse({
+    status: 409,
+    description:
+      'Cannot generate new breakdown while pending suggestions exist',
+  })
   breakDown(@Request() req: AuthenticatedRequest, @Param('id') id: string) {
     return this.tasksService.breakdownTask(req.user.id, id);
+  }
+
+  @Post(':id/accept-breakdown')
+  @ApiOperation({
+    summary: 'Accept and create subtasks from breakdown suggestions',
+  })
+  @ApiResponse({ status: 200, description: 'Subtasks created successfully' })
+  @ApiResponse({ status: 404, description: 'Task not found' })
+  acceptBreakdown(
+    @Request() req: AuthenticatedRequest,
+    @Param('id') id: string,
+    @Body() acceptBreakdownDto: AcceptBreakdownDto,
+  ) {
+    return this.tasksService.acceptBreakdown(
+      req.user.id,
+      id,
+      acceptBreakdownDto,
+    );
+  }
+
+  @Delete(':id/pending-breakdown')
+  @ApiOperation({ summary: 'Clear pending breakdown suggestions' })
+  @ApiResponse({ status: 200, description: 'Pending breakdown cleared' })
+  @ApiResponse({ status: 404, description: 'Task not found' })
+  clearPendingBreakdown(
+    @Request() req: AuthenticatedRequest,
+    @Param('id') id: string,
+  ) {
+    return this.tasksService.clearPendingBreakdown(req.user.id, id);
   }
 
   @Delete(':id')

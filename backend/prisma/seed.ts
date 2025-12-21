@@ -55,6 +55,8 @@ async function main() {
       title: 'Fix login bug',
       description: 'Users report timeout issues when logging in',
       status: 'todo',
+      priority: 'high',
+      dueDate: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000), // 3 days from now
       userId: user.id,
       tags: {
         connect: [{ id: tagBackend.id }, { id: tagBug.id }],
@@ -69,6 +71,8 @@ async function main() {
       description:
         'Create a comprehensive dashboard for users to track their tasks',
       status: 'in_progress',
+      priority: 'medium',
+      dueDate: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000), // 2 weeks from now
       userId: user.id,
       tags: {
         connect: [{ id: tagFrontend.id }, { id: tagFeature.id }],
@@ -82,6 +86,7 @@ async function main() {
       {
         title: 'Design dashboard layout',
         status: 'done',
+        priority: 'medium',
         userId: user.id,
         parentId: parentTask.id,
         order: 0,
@@ -89,6 +94,8 @@ async function main() {
       {
         title: 'Implement chart components',
         status: 'in_progress',
+        priority: 'high',
+        dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 1 week from now
         userId: user.id,
         parentId: parentTask.id,
         order: 1,
@@ -96,6 +103,7 @@ async function main() {
       {
         title: 'Add filtering controls',
         status: 'todo',
+        priority: 'low',
         userId: user.id,
         parentId: parentTask.id,
         order: 2,
@@ -103,6 +111,7 @@ async function main() {
       {
         title: 'Write unit tests',
         status: 'todo',
+        priority: 'medium',
         userId: user.id,
         parentId: parentTask.id,
         order: 3,
@@ -119,24 +128,47 @@ async function main() {
         title: 'Update API documentation',
         description: 'Add examples for new endpoints',
         status: 'todo',
+        priority: 'low',
+        dueDate: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000), // 5 days from now
         userId: user.id,
       },
       {
         title: 'Optimize database queries',
         description: 'Some endpoints are slow with large datasets',
         status: 'todo',
+        priority: 'high',
+        dueDate: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000), // 10 days from now
         userId: user.id,
       },
       {
         title: 'Setup CI/CD pipeline',
         description: 'Automate testing and deployment',
         status: 'done',
+        priority: 'medium',
         userId: user.id,
       },
     ],
   });
 
   console.log('✅ Created additional tasks');
+
+  // Create a task assigned to the user
+  await prisma.task.create({
+    data: {
+      title: 'Review code changes',
+      description: 'Review pull requests and provide feedback',
+      status: 'todo',
+      priority: 'high',
+      dueDate: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000), // 2 days from now
+      userId: user.id,
+      assigneeId: user.id, // Assign to self
+      tags: {
+        connect: [{ id: tagBackend.id }],
+      },
+    },
+  });
+
+  console.log('✅ Created assigned task');
 
   // Link tags to the additional tasks
   await prisma.task.update({

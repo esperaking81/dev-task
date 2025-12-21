@@ -1,4 +1,11 @@
-import { IsString, IsOptional, IsEnum, IsInt, IsUUID } from 'class-validator';
+import {
+  IsString,
+  IsOptional,
+  IsEnum,
+  IsInt,
+  IsUUID,
+  IsDateString,
+} from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export enum TaskStatus {
@@ -7,7 +14,43 @@ export enum TaskStatus {
   DONE = 'done',
 }
 
+export enum TaskPriority {
+  LOW = 'low',
+  MEDIUM = 'medium',
+  HIGH = 'high',
+}
+
 export type TaskStatusOptional = TaskStatus;
+
+export class BreakdownSuggestionDto {
+  @ApiProperty({ description: 'Task title' })
+  @IsString()
+  title: string;
+
+  @ApiPropertyOptional({ description: 'Task description' })
+  @IsOptional()
+  @IsString()
+  description?: string;
+
+  @ApiPropertyOptional({
+    enum: TaskPriority,
+    default: TaskPriority.MEDIUM,
+    enumName: 'TaskPriority',
+  })
+  @IsOptional()
+  @IsEnum(TaskPriority)
+  priority?: TaskPriority = TaskPriority.MEDIUM;
+
+  @ApiPropertyOptional({ description: 'Task order', default: 0 })
+  @IsOptional()
+  @IsInt()
+  order?: number = 0;
+}
+
+export class AcceptBreakdownDto {
+  @ApiProperty({ type: [BreakdownSuggestionDto] })
+  subtasks: BreakdownSuggestionDto[];
+}
 
 export class CreateTaskDto {
   @ApiProperty({ description: 'Task title' })
@@ -42,6 +85,25 @@ export class CreateTaskDto {
   @IsOptional()
   @IsUUID()
   tagIds?: string[];
+
+  @ApiPropertyOptional({ description: 'Task due date', type: String })
+  @IsOptional()
+  @IsDateString()
+  dueDate?: string;
+
+  @ApiPropertyOptional({
+    enum: TaskPriority,
+    default: TaskPriority.MEDIUM,
+    enumName: 'TaskPriority',
+  })
+  @IsOptional()
+  @IsEnum(TaskPriority)
+  priority?: TaskPriority = TaskPriority.MEDIUM;
+
+  @ApiPropertyOptional({ description: 'Assignee user ID' })
+  @IsOptional()
+  @IsUUID()
+  assigneeId?: string;
 }
 
 export class UpdateTaskDto {
@@ -77,4 +139,22 @@ export class UpdateTaskDto {
   @IsOptional()
   @IsUUID()
   tagIds?: string[];
+
+  @ApiPropertyOptional({ description: 'Task due date', type: String })
+  @IsOptional()
+  @IsDateString()
+  dueDate?: string;
+
+  @ApiPropertyOptional({
+    enum: TaskPriority,
+    enumName: 'TaskPriority',
+  })
+  @IsOptional()
+  @IsEnum(TaskPriority)
+  priority?: TaskPriority;
+
+  @ApiPropertyOptional({ description: 'Assignee user ID' })
+  @IsOptional()
+  @IsUUID()
+  assigneeId?: string;
 }

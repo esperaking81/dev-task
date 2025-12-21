@@ -4,22 +4,21 @@ import {
   Get,
   Post,
   Request,
+  Res,
   UseGuards,
 } from '@nestjs/common';
 import {
-  ApiTags,
+  ApiBearerAuth,
   ApiOperation,
   ApiResponse,
-  ApiBearerAuth,
+  ApiTags,
 } from '@nestjs/swagger';
-import assert from 'node:assert';
+import type { Request as ExpressRequest, Response } from 'express';
+import type { AuthenticatedRequest } from '../common/types/auth.types';
 import { AuthService } from './auth.service';
 import { SignupDto } from './dtos/signup.dto';
-import { LoginDto } from './dtos/login.dto';
 import { JwtAuthGuard } from './jwt-auth.guard';
 import { LocalAuthGuard } from './local-auth.guard';
-import type { AuthenticatedRequest } from '../common/types/auth.types';
-import type { Request as ExpressRequest } from 'express';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -33,11 +32,22 @@ export class AuthController {
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   async login(
     @Request() req: ExpressRequest,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    @Body() loginDto: LoginDto,
+    @Res({ passthrough: true }) res: Response,
   ) {
-    assert(req.user != null);
-    return this.authService.login(req.user);
+    const result = await this.authService.login(req.user!);
+
+    // Set httpOnly cookie with JWT token
+    const maxAge = parseInt(process.env.JWT_COOKIE_MAX_AGE || '604800000', 10); // 7 days default
+    const secure = process.env.NODE_ENV === 'production';
+
+    res.cookie('access_token', result.access_token, {
+      httpOnly: true,
+      secure,
+      sameSite: 'strict',
+      maxAge,
+    });
+
+    return result;
   }
 
   @Post('sign-up')
@@ -50,6 +60,20 @@ export class AuthController {
       signupDto.email,
       signupDto.password,
     );
+  }
+
+  @Post('logout')
+  @ApiOperation({ summary: 'User logout' })
+  @ApiResponse({ status: 200, description: 'Logout successful' })
+  logout(@Res({ passthrough: true }) res: Response) {
+    // Clear the httpOnly cookie
+    res.clearCookie('access_token', {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+    });
+
+    return { message: 'Logged out successfully' };
   }
 
   @UseGuards(JwtAuthGuard)

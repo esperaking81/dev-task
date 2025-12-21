@@ -7,6 +7,7 @@ import { UserModule } from './user/user.module';
 import { TasksModule } from './tasks/tasks.module';
 import { AiModule } from './ai/ai.module';
 import { TagsModule } from './tags/tags.module';
+import { RedisModule } from './redis/redis.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { TagsModule } from './tags/tags.module';
     TasksModule,
     AiModule,
     TagsModule,
+    RedisModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -1,13 +1,20 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { CreateTaskDto, UpdateTaskDto, TaskStatus } from './dto/task.dto';
-import { AiService } from 'src/ai/ai.service';
+import {
+  CreateTaskDto,
+  UpdateTaskDto,
+  TaskStatus,
+  AcceptBreakdownDto,
+} from './dto/task.dto';
+import { AiService, BreakdownSuggestion } from '../ai/ai.service';
+import { RedisService } from '../redis/redis.service';
 
 @Injectable()
 export class TasksService {
   constructor(
     private prisma: PrismaService,
     private aiService: AiService,
+    private redisService: RedisService,
   ) {}
 
   async create(userId: string, createTaskDto: CreateTaskDto) {
@@ -119,16 +126,50 @@ export class TasksService {
       throw new Error('Task not found');
     }
 
-    const taskTitle = task.title;
+    // Check if there are pending suggestions
+    const existingSuggestions = await this.redisService.getPendingBreakdown(
+      userId,
+      id,
+    );
+    if (existingSuggestions) {
+      return {
+        suggestions: existingSuggestions as BreakdownSuggestion[],
+        isPending: true,
+      };
+    }
 
-    const subtasks = await this.aiService.breakdownTask(taskTitle);
+    // Generate new suggestions
+    const taskTitle = task.title;
+    const suggestions = await this.aiService.breakdownTask(taskTitle);
+
+    // Store in Redis
+    await this.redisService.setPendingBreakdown(userId, id, suggestions);
+
+    return { suggestions, isPending: false };
+  }
+
+  async acceptBreakdown(
+    userId: string,
+    id: string,
+    acceptDto: AcceptBreakdownDto,
+  ) {
+    const task = await this.prisma.task.findFirst({
+      where: { id, userId },
+    });
+
+    if (!task) {
+      throw new Error('Task not found');
+    }
+
+    const subtasks = acceptDto.subtasks;
     if (subtasks.length > 0) {
       await this.prisma.$transaction(async (tx) => {
         await tx.task.createMany({
-          data: subtasks.map((subtask) => ({
-            title: subtask.title || '',
+          data: subtasks.map((subtask, index) => ({
+            title: subtask.title,
             description: subtask.description || undefined,
-            order: subtask.order || 0,
+            order: subtask.order ?? index,
+            priority: subtask.priority || 'medium',
             status: TaskStatus.TODO,
             userId,
             parentId: id,
@@ -137,6 +178,22 @@ export class TasksService {
       });
     }
 
+    // Clear pending breakdown
+    await this.redisService.deletePendingBreakdown(userId, id);
+
     return this.findOne(userId, id);
+  }
+
+  async clearPendingBreakdown(userId: string, id: string) {
+    // Verify task exists and belongs to user
+    const task = await this.prisma.task.findFirst({
+      where: { id, userId },
+    });
+
+    if (!task) {
+      throw new Error('Task not found');
+    }
+
+    await this.redisService.deletePendingBreakdown(userId, id);
   }
 }

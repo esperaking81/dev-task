@@ -19,6 +19,17 @@ services:
       timeout: 5s
       retries: 5
 
+  redis:
+    image: redis:7-alpine
+    container_name: devtask-redis
+    restart: always
+    ports:
+      - '6379:6379'
+    volumes:
+      - redis_data:/data
+    networks:
+      - devtask-network
+
   # Optional: pgAdmin for visual database management
   pgadmin:
     image: dpage/pgadmin4:latest
@@ -38,3 +49,4 @@ networks:
 
 volumes:
   postgres_data:
+  redis_data:
