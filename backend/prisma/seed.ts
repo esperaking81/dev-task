@@ -54,8 +54,8 @@ async function main() {
     data: {
       title: 'Fix login bug',
       description: 'Users report timeout issues when logging in',
-      status: 'todo',
-      priority: 'high',
+      status: 'TODO',
+      priority: 'HIGH',
       dueDate: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000), // 3 days from now
       userId: user.id,
       tags: {
@@ -70,8 +70,8 @@ async function main() {
       title: 'Build user dashboard',
       description:
         'Create a comprehensive dashboard for users to track their tasks',
-      status: 'in_progress',
-      priority: 'medium',
+      status: 'IN_PROGRESS',
+      priority: 'MEDIUM',
       dueDate: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000), // 2 weeks from now
       userId: user.id,
       tags: {
@@ -85,16 +85,16 @@ async function main() {
     data: [
       {
         title: 'Design dashboard layout',
-        status: 'done',
-        priority: 'medium',
+        status: 'DONE',
+        priority: 'MEDIUM',
         userId: user.id,
         parentId: parentTask.id,
         order: 0,
       },
       {
         title: 'Implement chart components',
-        status: 'in_progress',
-        priority: 'high',
+        status: 'IN_PROGRESS',
+        priority: 'HIGH',
         dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 1 week from now
         userId: user.id,
         parentId: parentTask.id,
@@ -102,16 +102,16 @@ async function main() {
       },
       {
         title: 'Add filtering controls',
-        status: 'todo',
-        priority: 'low',
+        status: 'TODO',
+        priority: 'LOW',
         userId: user.id,
         parentId: parentTask.id,
         order: 2,
       },
       {
         title: 'Write unit tests',
-        status: 'todo',
-        priority: 'medium',
+        status: 'TODO',
+        priority: 'MEDIUM',
         userId: user.id,
         parentId: parentTask.id,
         order: 3,
@@ -127,24 +127,24 @@ async function main() {
       {
         title: 'Update API documentation',
         description: 'Add examples for new endpoints',
-        status: 'todo',
-        priority: 'low',
+        status: 'TODO',
+        priority: 'LOW',
         dueDate: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000), // 5 days from now
         userId: user.id,
       },
       {
         title: 'Optimize database queries',
         description: 'Some endpoints are slow with large datasets',
-        status: 'todo',
-        priority: 'high',
+        status: 'TODO',
+        priority: 'HIGH',
         dueDate: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000), // 10 days from now
         userId: user.id,
       },
       {
         title: 'Setup CI/CD pipeline',
         description: 'Automate testing and deployment',
-        status: 'done',
-        priority: 'medium',
+        status: 'DONE',
+        priority: 'MEDIUM',
         userId: user.id,
       },
     ],
@@ -157,8 +157,8 @@ async function main() {
     data: {
       title: 'Review code changes',
       description: 'Review pull requests and provide feedback',
-      status: 'todo',
-      priority: 'high',
+      status: 'TODO',
+      priority: 'HIGH',
       dueDate: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000), // 2 days from now
       userId: user.id,
       assigneeId: user.id, // Assign to self
