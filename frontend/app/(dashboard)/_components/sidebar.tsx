@@ -2,10 +2,10 @@
 
 import React from "react";
 
-import { NavLink } from "./nav-link";
-import { NAV_ITEMS } from "../../lib/constants";
-import { SidebarFooter } from "./sidebar-footer";
-import { SidebarHeader } from "./sidebar-header";
+import { NavLink } from "./ui/nav-link";
+import { NAV_ITEMS } from "@/lib/constants";
+import { SidebarFooter } from "./ui/sidebar-footer";
+import { SidebarHeader } from "./ui/sidebar-header";
 
 interface SidebarProps {
   onNewTaskClick?: () => void;
