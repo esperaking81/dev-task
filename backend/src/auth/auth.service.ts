@@ -13,6 +13,8 @@ export const userSelectWithoutPassword = {
   updatedAt: true,
 } as const;
 
+type UserWithoutPassword = Omit<User, 'password'>;
+
 @Injectable()
 export class AuthService {
   constructor(
@@ -23,7 +25,7 @@ export class AuthService {
   async validateUser(
     email: string,
     password: string,
-  ): Promise<Omit<User, 'password'> | null> {
+  ): Promise<UserWithoutPassword | null> {
     const user = await this.prisma.user.findUnique({
       where: { email },
       select: {
@@ -70,7 +72,7 @@ export class AuthService {
     name: string,
     email: string,
     password: string,
-  ): Promise<Omit<User, 'password'>> {
+  ): Promise<UserWithoutPassword> {
     const hashedPassword = await bcrypt.hash(password, 10);
     return await this.prisma.user.create({
       data: {
@@ -80,5 +82,14 @@ export class AuthService {
       },
       select: userSelectWithoutPassword,
     });
+  }
+
+  async getMe(email: string): Promise<UserWithoutPassword> {
+    const user = await this.prisma.user.findUnique({
+      where: { email },
+      select: userSelectWithoutPassword,
+    });
+
+    return user!;
   }
 }

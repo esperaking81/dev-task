@@ -19,6 +19,7 @@ import { AuthService } from './auth.service';
 import { SignupDto } from './dtos/signup.dto';
 import { JwtAuthGuard } from './jwt-auth.guard';
 import { LocalAuthGuard } from './local-auth.guard';
+import { LoginDto } from './dtos/login.dto';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -33,6 +34,8 @@ export class AuthController {
   async login(
     @Request() req: ExpressRequest,
     @Res({ passthrough: true }) res: Response,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    @Body() loginDto: LoginDto,
   ) {
     const result = await this.authService.login(req.user!);
 
@@ -83,6 +86,6 @@ export class AuthController {
   @ApiResponse({ status: 200, description: 'Profile retrieved successfully' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   getProfile(@Request() req: AuthenticatedRequest) {
-    return req.user;
+    return this.authService.getMe(req.user.email);
   }
 }
