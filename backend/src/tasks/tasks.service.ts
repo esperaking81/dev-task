@@ -4,10 +4,12 @@ import {
   CreateTaskDto,
   UpdateTaskDto,
   TaskStatus,
+  TaskPriority,
   AcceptBreakdownDto,
 } from './dto/task.dto';
 import { AiService, BreakdownSuggestion } from '../ai/ai.service';
 import { RedisService } from '../redis/redis.service';
+import { userSelectWithoutPassword } from '../auth/auth.service';
 
 @Injectable()
 export class TasksService {
@@ -18,7 +20,7 @@ export class TasksService {
   ) {}
 
   async create(userId: string, createTaskDto: CreateTaskDto) {
-    const { tagIds, ...taskData } = createTaskDto;
+    const { tagIds, assigneeIds, ...taskData } = createTaskDto;
 
     return await this.prisma.task.create({
       data: {
@@ -29,11 +31,19 @@ export class TasksService {
               connect: tagIds.map((id) => ({ id })),
             }
           : undefined,
+        assignees: assigneeIds
+          ? {
+              connect: assigneeIds.map((id) => ({ id })),
+            }
+          : undefined,
       },
       include: {
         tags: true,
         subtasks: true,
         parent: true,
+        assignees: {
+          select: userSelectWithoutPassword,
+        },
       },
     });
   }
@@ -48,6 +58,9 @@ export class TasksService {
         tags: true,
         subtasks: true,
         parent: true,
+        assignees: {
+          select: userSelectWithoutPassword,
+        },
       },
       orderBy: [{ order: 'asc' }, { createdAt: 'desc' }],
     });
@@ -63,6 +76,9 @@ export class TasksService {
         tags: true,
         subtasks: true,
         parent: true,
+        assignees: {
+          select: userSelectWithoutPassword,
+        },
       },
     });
 
@@ -74,7 +90,7 @@ export class TasksService {
   }
 
   async update(userId: string, id: string, updateTaskDto: UpdateTaskDto) {
-    const { tagIds, ...taskData } = updateTaskDto;
+    const { tagIds, assigneeIds, ...taskData } = updateTaskDto;
 
     const existingTask = await this.prisma.task.findFirst({
       where: { id, userId },
@@ -94,11 +110,20 @@ export class TasksService {
               connect: tagIds.map((id) => ({ id })),
             }
           : undefined,
+        assignees: assigneeIds
+          ? {
+              set: [],
+              connect: assigneeIds.map((id) => ({ id })),
+            }
+          : undefined,
       },
       include: {
         tags: true,
         subtasks: true,
         parent: true,
+        assignees: {
+          select: userSelectWithoutPassword,
+        },
       },
     });
   }
@@ -169,7 +194,7 @@ export class TasksService {
             title: subtask.title,
             description: subtask.description || undefined,
             order: subtask.order ?? index,
-            priority: subtask.priority || 'medium',
+            priority: subtask.priority || TaskPriority.MEDIUM,
             status: TaskStatus.TODO,
             userId,
             parentId: id,

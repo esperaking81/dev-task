@@ -9,15 +9,15 @@ import {
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export enum TaskStatus {
-  TODO = 'todo',
-  IN_PROGRESS = 'in_progress',
-  DONE = 'done',
+  TODO = 'TODO',
+  IN_PROGRESS = 'IN_PROGRESS',
+  DONE = 'DONE',
 }
 
 export enum TaskPriority {
-  LOW = 'low',
-  MEDIUM = 'medium',
-  HIGH = 'high',
+  LOW = 'LOW',
+  MEDIUM = 'MEDIUM',
+  HIGH = 'HIGH',
 }
 
 export type TaskStatusOptional = TaskStatus;
@@ -100,10 +100,13 @@ export class CreateTaskDto {
   @IsEnum(TaskPriority)
   priority?: TaskPriority = TaskPriority.MEDIUM;
 
-  @ApiPropertyOptional({ description: 'Assignee user ID' })
+  @ApiPropertyOptional({
+    description: 'Array of assignee user IDs',
+    type: [String],
+  })
   @IsOptional()
-  @IsUUID()
-  assigneeId?: string;
+  @IsUUID(undefined, { each: true })
+  assigneeIds?: string[];
 }
 
 export class UpdateTaskDto {
@@ -153,8 +156,11 @@ export class UpdateTaskDto {
   @IsEnum(TaskPriority)
   priority?: TaskPriority;
 
-  @ApiPropertyOptional({ description: 'Assignee user ID' })
+  @ApiPropertyOptional({
+    description: 'Array of assignee user IDs',
+    type: [String],
+  })
   @IsOptional()
-  @IsUUID()
-  assigneeId?: string;
+  @IsUUID(undefined, { each: true })
+  assigneeIds?: string[];
 }

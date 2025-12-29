@@ -11,7 +11,10 @@ val PurpleGrey40 = Color(0xFF625b71)
 val Pink40 = Color(0xFF7D5260)
 
 val NavyBlue = Color(0xFF0D1117)
-val BrightBlue = Color(0xFF388BF5)
-val CardBackground = Color(0xFF161B22)
+val BrightBlue = Color(0xFF0d59f2)
+val CardBackground = Color(0xFF1b1f27)
 val TextColor = Color(0xFFC9D1D9)
 val HighPriorityRed = Color(0xFFD93F53)
+
+val BorderDark = Color(0xFF3b4354)
+val Gray = Color(0xFF8D949E)

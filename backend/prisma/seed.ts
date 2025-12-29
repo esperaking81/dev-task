@@ -161,7 +161,9 @@ async function main() {
       priority: 'HIGH',
       dueDate: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000), // 2 days from now
       userId: user.id,
-      assigneeId: user.id, // Assign to self
+      assignees: {
+        connect: [{ id: user.id }], // Assign to self
+      },
       tags: {
         connect: [{ id: tagBackend.id }],
       },

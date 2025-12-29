@@ -10,21 +10,27 @@ import {
   Request,
   Query,
 } from '@nestjs/common';
+
 import { ApiQuery } from '@nestjs/swagger';
+
 import {
   ApiTags,
   ApiOperation,
   ApiResponse,
   ApiBearerAuth,
 } from '@nestjs/swagger';
+
 import { TasksService } from './tasks.service';
+
 import {
   CreateTaskDto,
   UpdateTaskDto,
   TaskStatus,
   AcceptBreakdownDto,
 } from './dto/task.dto';
+
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+
 import type { AuthenticatedRequest } from '../common/types/auth.types';
 
 @ApiTags('tasks')

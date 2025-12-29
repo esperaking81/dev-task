@@ -32,7 +32,7 @@ model User {
   updatedAt DateTime @updatedAt
 
   tasks         Task[] @relation("TaskUser")
-  assignedTasks Task[] @relation("TaskAssignee")
+  assignedTasks Task[] @relation("TaskAssignees")
 }
 
 model Task {
@@ -50,9 +50,8 @@ model Task {
   userId String
   user   User   @relation("TaskUser", fields: [userId], references: [id], onDelete: Cascade)
 
-  // Assignee relation
-  assigneeId String?
-  assignee   User?   @relation("TaskAssignee", fields: [assigneeId], references: [id])
+  // Assignees relation
+  assignees User[] @relation("TaskAssignees")
 
   // Self-relation for subtasks
   parentId String?
@@ -63,7 +62,6 @@ model Task {
   tags Tag[]
 
   @@index([userId])
-  @@index([assigneeId])
   @@index([parentId])
 }
 
