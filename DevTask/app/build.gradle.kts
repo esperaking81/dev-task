@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.ksp)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.serialization.plugin)
 }
@@ -53,17 +54,21 @@ dependencies {
     implementation(libs.androidx.compose.ui.graphics)
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.material3)
-    implementation(libs.androidx.room.ktx)
-    implementation(libs.kotlinx.serialization.json)
-    annotationProcessor(libs.androidx.room.compilier)
+
+
+    // room
+    implementation(libs.androidx.room.runtime)
+    ksp(libs.androidx.room.compilier)
 
     // Koin
     implementation(libs.koin.ktor)
     implementation(libs.koin.androidx.compose)
+    implementation(libs.kotlinx.serialization.json)
 
     // Ktor
     implementation(libs.ktor.core)
     implementation(libs.ktor.client.cio)
+    implementation(libs.ktor.client.logging)
     implementation(libs.ktor.content.client.negociation)
     implementation(libs.ktor.serialization.kotlinx.json)
 

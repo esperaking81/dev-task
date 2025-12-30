@@ -4,6 +4,7 @@ import dev.espera.devtask.data.model.AppState
 import dev.espera.devtask.domain.models.User
 import androidx.datastore.core.DataStore
 import dev.espera.devtask.data.datasources.local.dao.UserDao
+import dev.espera.devtask.data.datasources.local.entities.UserEntity
 import dev.espera.devtask.data.datasources.local.entities.toDomain
 import dev.espera.devtask.data.datasources.remote.models.LoginResponse
 import kotlinx.coroutines.flow.Flow
@@ -39,6 +40,16 @@ class UsersPreferencesDataSource(
         val userName = loginResponse.user.name
         val userId = loginResponse.user.id
         val accessToken = loginResponse.accessToken
+
+        userDao.insert(
+            UserEntity(
+                id = userId,
+                createdAt = "",
+                updatedAt = "",
+                name = userName,
+                email = loginResponse.user.email,
+            )
+        )
 
         val appState = AppState(
             userId = userId,

@@ -9,18 +9,21 @@ import io.ktor.client.call.body
 import io.ktor.client.request.get
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
+import io.ktor.http.ContentType
+import io.ktor.http.contentType
 
 class DevTaskApiImpl(
     private val client: HttpClient,
 ) : DevTaskApi {
     companion object {
-        private const val BASE_URL = "http://localhost:3000"
+        private const val BASE_URL = "http://10.0.2.2:4000"
     }
 
     override suspend fun login(
         with: LoginDto
     ): LoginResponse {
-        return client.post("$BASE_URL/login") {
+        return client.post("$BASE_URL/auth/login") {
+            contentType(ContentType.Application.Json)
             setBody(with)
         }.body<LoginResponse>()
     }

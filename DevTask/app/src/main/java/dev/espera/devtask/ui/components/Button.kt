@@ -19,21 +19,29 @@ import dev.espera.devtask.ui.theme.BrightBlue
 @Composable
 fun DevTaskButton(
     text: String,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    isEnabled: Boolean = true,
 ) {
+    val backgroundColor = if (isEnabled) BrightBlue else Color.Gray.copy(.5f)
+    val textColor = if (isEnabled) Color.White else Color.Gray
+
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(12.dp))
-            .background(BrightBlue)
-            .clickable { onClick() }
+            .background( backgroundColor)
+            .clickable {
+                if (isEnabled){
+                    onClick()
+                }
+            }
             .padding(vertical = 16.dp),
         contentAlignment = Alignment.Center
     ) {
         Text(
             text = text,
             style = MaterialTheme.typography.labelMedium.copy(
-                color = Color.White
+                color = textColor
             )
         )
     }

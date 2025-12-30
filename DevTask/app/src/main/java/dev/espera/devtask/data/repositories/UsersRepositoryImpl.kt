@@ -22,12 +22,13 @@ class UsersRepositoryImpl(
 
     override suspend fun login(email: String, password: String): Result<Unit> {
         try {
-           val loginResponse = usersRemoteDataSource.login(
-               LoginDto(email, password)
-           )
+            val loginResponse = usersRemoteDataSource.login(
+                LoginDto(email, password)
+            )
             usersLocalDataSource.logIn(loginResponse)
             return Result.success(Unit)
-        } catch (e: Exception){
+        } catch (e: Exception) {
+            println("login error: ${e.message} ${e.stackTrace}")
             return Result.failure(e)
         }
     }

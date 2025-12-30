@@ -9,10 +9,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   // Enable CORS
-  app.enableCors({
-    origin: 'http://localhost:3000',
-    credentials: true,
-  });
+  app.enableCors();
 
   // Add logging interceptor for dev environment
   if (process.env.NODE_ENV === 'development') {

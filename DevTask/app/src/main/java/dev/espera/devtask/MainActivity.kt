@@ -12,14 +12,24 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.ui.NavDisplay
+import dev.espera.devtask.common.di.appModule
 import dev.espera.devtask.features.auth.screens.AuthScreen
 import dev.espera.devtask.features.home.screens.HomeScreen
 import dev.espera.devtask.ui.theme.DevTaskTheme
+import org.koin.android.ext.koin.androidContext
+import org.koin.compose.KoinApplication
+import org.koin.core.context.startKoin
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
+        startKoin {
+            androidContext(this@MainActivity)
+            modules(appModule)
+        }
+
         setContent {
             DevTaskApp()
         }
@@ -30,35 +40,39 @@ class MainActivity : ComponentActivity() {
 fun DevTaskApp() {
     val backStack = remember { mutableStateListOf<Any>(AuthScreen) }
 
-    DevTaskTheme {
-        NavDisplay(
-            backStack = backStack,
-            onBack = { backStack.removeLastOrNull() },
-            entryProvider = entryProvider {
-                entry<AuthScreen> {
-                    AuthScreen(
-                        onNavigateToHome = {
-                            backStack.add(HomeScreen)
-                        }
-                    )
-                }
-                entry<HomeScreen> { HomeScreen() }
-            },
-            transitionSpec = {
-                // Slide in from right when navigating forward
-                slideInHorizontally(initialOffsetX = { it }) togetherWith
-                        slideOutHorizontally(targetOffsetX = { -it })
-            },
-            popTransitionSpec = {
-                // Slide in from left when navigating back
-                slideInHorizontally(initialOffsetX = { -it }) togetherWith
-                        slideOutHorizontally(targetOffsetX = { it })
-            },
-            predictivePopTransitionSpec = {
-                // Slide in from left when navigating back
-                slideInHorizontally(initialOffsetX = { -it }) togetherWith
-                        slideOutHorizontally(targetOffsetX = { it })
-            },
-        )
+    KoinApplication(application = {
+        modules(appModule)
+    }){
+        DevTaskTheme {
+            NavDisplay(
+                backStack = backStack,
+                onBack = { backStack.removeLastOrNull() },
+                entryProvider = entryProvider {
+                    entry<AuthScreen> {
+                        AuthScreen(
+                            onLogInSuccessful = {
+                                backStack.add(HomeScreen)
+                            }
+                        )
+                    }
+                    entry<HomeScreen> { HomeScreen() }
+                },
+                transitionSpec = {
+                    // Slide in from right when navigating forward
+                    slideInHorizontally(initialOffsetX = { it }) togetherWith
+                            slideOutHorizontally(targetOffsetX = { -it })
+                },
+                popTransitionSpec = {
+                    // Slide in from left when navigating back
+                    slideInHorizontally(initialOffsetX = { -it }) togetherWith
+                            slideOutHorizontally(targetOffsetX = { it })
+                },
+                predictivePopTransitionSpec = {
+                    // Slide in from left when navigating back
+                    slideInHorizontally(initialOffsetX = { -it }) togetherWith
+                            slideOutHorizontally(targetOffsetX = { it })
+                },
+            )
+        }
     }
 }
