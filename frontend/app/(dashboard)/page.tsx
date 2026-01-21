@@ -1,13 +1,25 @@
 import {
   InputGroup,
-  InputGroupInput,
   InputGroupAddon,
+  InputGroupInput,
 } from "@/components/ui/input-group";
 
 import Image from "next/image";
 import avatarIcon from "../../public/avatar.svg";
 
-import { Search, BellDotIcon } from "lucide-react";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
+import {
+  BellDotIcon,
+  ChevronDown,
+  Columns4,
+  List,
+  ListFilter,
+  Search,
+  SquareKanban,
+} from "lucide-react";
 
 export default function Page() {
   return (
@@ -22,11 +34,8 @@ const Header = () => {
   return (
     <div className="w-full flex p-4 border-b border-border-dark">
       <div className="flex-1">
-        <InputGroup className="w-1/2">
-          <InputGroupInput
-            className="border-none bg-none bg-background-dark"
-            placeholder="Search tasks..."
-          />
+        <InputGroup className="w-1/2 bg-white/10 border-none">
+          <InputGroupInput placeholder="Search tasks..." />
           <InputGroupAddon>
             <Search />
           </InputGroupAddon>
@@ -52,8 +61,9 @@ const Header = () => {
 
 const DashboardTasks = () => {
   return (
-    <div className="p-4">
+    <div className="flex flex-col p-4 gap-6">
       <Heading />
+      <ActionBar />
     </div>
   );
 };
@@ -69,5 +79,54 @@ const Heading = () => {
         <span>Tuesday, Oct 24</span>
       </div>
     </div>
+  );
+};
+
+const ActionBar = () => {
+  return (
+    <div className="flex justify-between w-full">
+      <div className="flex items-center gap-2">
+        <FilterButton label="Status" />
+        <FilterButton label="Due Date" />
+        <FilterButton label="Assignee" />
+        <Separator orientation="vertical" className="bg-border-dark mx-2" />
+        <Button className="font-bold text-primary" variant="ghost">
+          <ListFilter />
+          {"More Filters"}
+        </Button>
+      </div>
+      <div>
+        <ViewModeTabs />
+      </div>
+    </div>
+  );
+};
+
+const FilterButton = ({ label = "Filter" }: { label: string }) => {
+  return (
+    <Button className="bg-surface-dark font-bold border border-white/5">
+      {label}
+      <ChevronDown className="text-text-secondary" />
+    </Button>
+  );
+};
+
+const ViewModeTabs = () => {
+  return (
+    <Tabs defaultValue="list">
+      <TabsList>
+        <TabsTrigger value="list">
+          <List />
+          List
+        </TabsTrigger>
+        <TabsTrigger value="Board">
+          <SquareKanban /> Board
+        </TabsTrigger>
+        <TabsTrigger value="timeline">
+          <Columns4 />
+          Timeline
+        </TabsTrigger>
+      </TabsList>
+    </Tabs>
   );
 };

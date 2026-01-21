@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
-import { LoadingSpinner } from "../ui/LoadingSpinner";
+import { LoadingSpinner } from "../ui/loading-spinner";
 import { Logo } from "../ui/Logo";
 import { login } from "@/lib/actions/auth";
 import { useFormStatus } from "react-dom";

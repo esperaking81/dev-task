@@ -3,12 +3,12 @@
 
 :root {
   --primary: #135bec;
-  --surface-dark: #1a2230;
+  --surface-dark: #282e39;
   --border-dark: #282e39;
   --text-secondary: #9da6b9;
   --radius: 0.625rem;
   --background: oklch(1 0 0);
-  --background-dark: #101622;
+  --background-dark: #111318;
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.145 0 0);
