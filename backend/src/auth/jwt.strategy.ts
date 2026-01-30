@@ -1,31 +1,20 @@
 import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Request } from 'express';
-import { Strategy } from 'passport-jwt';
-
-const extractJwt = (req: Request): string | null => {
-  let token: string | null = null;
-
-  // Try Authorization header first (mobile/API clients)
-  if (req?.headers?.authorization) {
-    token = req.headers.authorization.replace('Bearer ', '');
-  }
-
-  // Fall back to cookie (browser)
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-  if (!token && req?.cookies?.access_token) {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
-    token = req.cookies.access_token;
-  }
-
-  return token!;
-};
+import { ExtractJwt, Strategy } from 'passport-jwt';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor() {
     super({
-      jwtFromRequest: extractJwt,
+      jwtFromRequest: ExtractJwt.fromExtractors([
+        (request: Request) => {
+          return request?.headers?.authorization?.replace('Bearer ', '');
+        },
+        (request: Request) => {
+          return request?.cookies?.access_token;
+        },
+      ]),
       ignoreExpiration: false,
       secretOrKey: process.env.JWT_SECRET || 'your-secret-key',
     });

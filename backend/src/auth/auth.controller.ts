@@ -35,22 +35,24 @@ export class AuthController {
     @Request() req: ExpressRequest,
     @Res({ passthrough: true }) res: Response,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    @Body() loginDto: LoginDto,
+    @Body() _: LoginDto,
   ) {
     const result = await this.authService.login(req.user!);
 
     // Set httpOnly cookie with JWT token
-    const maxAge = parseInt(process.env.JWT_COOKIE_MAX_AGE || '604800000', 10); // 7 days default
+    const maxAge = parseInt(process.env.JWT_COOKIE_MAX_AGE || '604800000', 10);
     const secure = process.env.NODE_ENV === 'production';
 
     res.cookie('access_token', result.access_token, {
       httpOnly: true,
       secure,
-      sameSite: 'strict',
       maxAge,
     });
 
-    return result;
+    return {
+      ...result,
+      maxAge,
+    };
   }
 
   @Post('sign-up')
@@ -72,8 +74,8 @@ export class AuthController {
     // Clear the httpOnly cookie
     res.clearCookie('access_token', {
       httpOnly: true,
+      sameSite: 'lax',
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
     });
 
     return { message: 'Logged out successfully' };

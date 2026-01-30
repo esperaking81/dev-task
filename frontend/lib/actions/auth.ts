@@ -4,6 +4,7 @@ import { cookies } from "next/headers";
 
 import { authApi, LoginDtoSchema } from "../server/auth";
 import { redirect } from "next/navigation";
+import { ApiError } from "../types/ApiError";
 
 export type LoginActionState = {
   errors?: {
@@ -27,10 +28,10 @@ export async function login(formData: FormData): Promise<LoginActionState> {
     };
   }
 
-  const response = await authApi.login(validationResult.data);
-  if (response.ok) {
+  try {
     const {
       user,
+      maxAge,
       access_token,
     }: {
       access_token: string;
@@ -39,23 +40,22 @@ export async function login(formData: FormData): Promise<LoginActionState> {
         name: string;
         email: string;
       };
-    } = await response.json();
+      maxAge: number;
+    } = await authApi.login(validationResult.data);
 
     const cookieStore = await cookies();
-    cookieStore.set("access_token", access_token);
+    cookieStore.set("httpOnly", "true");
     cookieStore.set("name", user.name);
     cookieStore.set("email", user.email);
+    cookieStore.set("maxAge", maxAge.toString());
+    cookieStore.set("access_token", access_token);
 
     redirect("/");
-  }
+  } catch (e) {
+    if (e instanceof ApiError && e.status === 401) {
+      return { message: "Invalid credentials." };
+    }
 
-  if (response.status === 401) {
-    return {
-      message: "Invalid credentials",
-    };
+    return { message: "Something went wrong." };
   }
-
-  return {
-    message: "An error occurred",
-  };
 }

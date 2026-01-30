@@ -1,83 +1,63 @@
 import { fetcher } from "./client";
 import { API_ENDPOINTS } from "./endpoints";
 import { Task } from "../types/task";
+import { BreakdownSuggestion } from "../types/breakdown";
 
 export const tasksApi = {
   async getAll() {
-    const response = await fetcher(API_ENDPOINTS.tasks.list);
-    if (!response.ok) {
-      throw new Error("Failed to fetch tasks");
-    }
-    return response.json() as Promise<Task[]>;
+    return await fetcher<Task[]>(API_ENDPOINTS.tasks.list);
   },
 
   async getById(id: string) {
-    const response = await fetcher(API_ENDPOINTS.tasks.byId(id));
-    if (!response.ok) {
-      throw new Error("Failed to fetch task");
-    }
-    return response.json() as Promise<Task>;
+    return await fetcher<Task>(API_ENDPOINTS.tasks.byId(id));
   },
 
   async create(data: Partial<Task>) {
-    const response = await fetcher(API_ENDPOINTS.tasks.create, {
+    return await fetcher(API_ENDPOINTS.tasks.create, {
       method: "POST",
       body: JSON.stringify(data),
     });
-    if (!response.ok) {
-      throw new Error("Failed to create task");
-    }
-    return response.json() as Promise<Task>;
   },
 
   async update(id: string, data: Partial<Task>) {
-    const response = await fetcher(API_ENDPOINTS.tasks.update(id), {
+    return await fetcher<Task>(API_ENDPOINTS.tasks.update(id), {
       method: "PUT",
       body: JSON.stringify(data),
     });
-    if (!response.ok) {
-      throw new Error("Failed to update task");
-    }
-    return response.json() as Promise<Task>;
   },
 
   async delete(id: string) {
-    const response = await fetcher(API_ENDPOINTS.tasks.delete(id), {
+    return await fetcher<Task>(API_ENDPOINTS.tasks.delete(id), {
       method: "DELETE",
     });
-    if (!response.ok) {
-      throw new Error("Failed to delete task");
-    }
-    return response.json() as Promise<Task>;
   },
 
   async breakDown(id: string) {
-    const response = await fetcher(API_ENDPOINTS.tasks.breakdown(id), {
+    const {
+      isPending,
+      suggestions,
+    }: {
+      isPending: boolean;
+      suggestions: BreakdownSuggestion[];
+    } = await fetcher(API_ENDPOINTS.tasks.breakdown(id), {
       method: "POST",
     });
-    if (!response.ok) {
-      throw new Error("Failed to break down task");
-    }
-    return response.json() as Promise<Task>;
+
+    return { isPending, suggestions };
   },
 
-  async acceptBreakdown(id: string) {
-    const response = await fetcher(API_ENDPOINTS.tasks.acceptBreakdown(id), {
+  async acceptBreakdown(id: string, suggestions: BreakdownSuggestion[]) {
+    const data = { subtasks: suggestions };
+    return await fetcher<Task>(API_ENDPOINTS.tasks.acceptBreakdown(id), {
       method: "POST",
+      body: JSON.stringify(data),
     });
-    if (!response.ok) {
-      throw new Error("Failed to accept breakdown");
-    }
-    return response.json() as Promise<Task>;
   },
 
   async clearPendingBreakdown(id: string) {
-    const response = await fetcher(API_ENDPOINTS.tasks.clearPendingBreakdown(id), {
+    await fetcher(API_ENDPOINTS.tasks.clearPendingBreakdown(id), {
       method: "POST",
     });
-    if (!response.ok) {
-      throw new Error("Failed to clear pending breakdown");
-    }
-    return response.json() as Promise<Task>;
   },
 };
+

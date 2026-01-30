@@ -7,7 +7,7 @@ import {
 import Image from "next/image";
 import avatarIcon from "../../public/avatar.svg";
 
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -20,12 +20,13 @@ import {
   Search,
   SquareKanban,
 } from "lucide-react";
+import { TasksList } from "@/components/tasks/TasksList";
 
 export default function Page() {
   return (
     <div className="flex flex-col min-h-screen">
       <Header />
-      <DashboardTasks />
+      <Dashboard />
     </div>
   );
 }
@@ -34,7 +35,7 @@ const Header = () => {
   return (
     <div className="w-full flex p-4 border-b border-border-dark">
       <div className="flex-1">
-        <InputGroup className="w-1/2 bg-white/10 border-none">
+        <InputGroup className="w-1/2 border-none">
           <InputGroupInput placeholder="Search tasks..." />
           <InputGroupAddon>
             <Search />
@@ -59,12 +60,13 @@ const Header = () => {
   );
 };
 
-const DashboardTasks = () => {
+const Dashboard = () => {
   return (
-    <div className="flex flex-col p-4 gap-6">
+    <Tabs defaultValue="list" className="flex flex-col p-4 gap-6">
       <Heading />
       <ActionBar />
-    </div>
+      <Tasks />
+    </Tabs>
   );
 };
 
@@ -113,20 +115,30 @@ const FilterButton = ({ label = "Filter" }: { label: string }) => {
 
 const ViewModeTabs = () => {
   return (
-    <Tabs defaultValue="list">
-      <TabsList>
-        <TabsTrigger value="list">
-          <List />
-          List
-        </TabsTrigger>
-        <TabsTrigger value="Board">
-          <SquareKanban /> Board
-        </TabsTrigger>
-        <TabsTrigger value="timeline">
-          <Columns4 />
-          Timeline
-        </TabsTrigger>
-      </TabsList>
-    </Tabs>
+    <TabsList>
+      <TabsTrigger value="list">
+        <List />
+        List
+      </TabsTrigger>
+      <TabsTrigger value="board">
+        <SquareKanban /> Board
+      </TabsTrigger>
+      <TabsTrigger value="timeline">
+        <Columns4 />
+        Timeline
+      </TabsTrigger>
+    </TabsList>
+  );
+};
+
+const Tasks = () => {
+  return (
+    <>
+      <TabsContent value="list">
+        <TasksList />
+      </TabsContent>
+      <TabsContent value="board">tasks board</TabsContent>
+      <TabsContent value="timeline">tasks timeline</TabsContent>
+    </>
   );
 };

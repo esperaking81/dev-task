@@ -19,8 +19,17 @@ export type SignUpDto = z.infer<typeof SignUpDtoSchema>;
 
 export const authApi = {
   login: (credentials: LoginDto) =>
-    serverFetcher(API_ENDPOINTS.auth.login, {
+    serverFetcher<{
+      access_token: string;
+      user: {
+        id: string;
+        name: string;
+        email: string;
+      };
+      maxAge: number;
+    }>(API_ENDPOINTS.auth.login, {
       method: "POST",
+      skipAuthRedirect: true,
       body: JSON.stringify(credentials),
     }),
   signUp: (credentials: SignUpDto) =>

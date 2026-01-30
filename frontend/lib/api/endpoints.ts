@@ -1,7 +1,7 @@
 export const API_ENDPOINTS = {
   auth: {
-    login: "/auth/login",
-    signUp: "/auth/sign-up",
+    login: "/api/auth/login",
+    signUp: "/api/auth/sign-up",
     getProfile: "/auth/profile",
   },
   tasks: {

@@ -11,7 +11,6 @@ import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { LoadingSpinner } from "../ui/loading-spinner";
 import { Logo } from "../ui/Logo";
-import { login } from "@/lib/actions/auth";
 import { useFormStatus } from "react-dom";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -29,19 +28,31 @@ export function LoginForm({
     e.preventDefault();
 
     const formData = new FormData(e.currentTarget);
-    const { errors, message } = await login(formData);
+    const response = await fetch("/api/auth/login", {
+      method: "POST",
+      body: JSON.stringify({
+        email: formData.get("email"),
+        password: formData.get("password"),
+      }),
+    });
 
-    if (message) {
-      toast.error(message);
-      return;
-    }
-
-    if (errors) {
+    if (response.status === 400) {
+      const { errors } = await response.json();
       setErrorState({
         email: errors.email,
         password: errors.password,
       });
       return;
+    }
+
+    if (response.status === 401) {
+      const { error } = await response.json();
+      toast.error(error);
+      return;
+    }
+
+    if (response.ok) {
+      window.location.href = "/";
     }
   };
 
