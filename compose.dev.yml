@@ -1,0 +1,94 @@
+services:
+  devtask-api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.dev
+      target: develop
+    container_name: devtask-api-dev
+    working_dir: /usr/src/app
+    ports:
+      - "4000:4000"
+    volumes:
+      - ./backend/:/usr/src/app
+      - /usr/src/app/node_modules
+    environment:
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+    env_file:
+      - ./backend/.env
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - devtask-network
+    profiles:
+      - dev
+
+  devtask-frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+      target: develop
+    container_name: devtask-frontend
+    working_dir: /usr/src/app
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend/:/usr/src/app
+      - /usr/src/app/node_modules
+    env_file:
+      - ./frontend/.env.local
+    depends_on:
+      - devtask-api
+
+  postgres:
+    networks:
+      - devtask-network
+    image: postgres:15-alpine
+    container_name: devtask-postgres
+    restart: always
+    environment:
+      POSTGRES_USER: devtask_user
+      POSTGRES_PASSWORD: devtask_password
+      POSTGRES_DB: devtask_db
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U devtask_user"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: devtask-redis
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - devtask-network
+
+  # Optional: pgAdmin for visual database management
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: devtask-pgadmin
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@devtask.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5050:80"
+    depends_on:
+      - postgres
+
+networks:
+  devtask-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  redis_data:
