@@ -6,10 +6,10 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
-    "start": "bun run src/main.ts",
-    "start:dev": "bun --watch src/main.ts",
-    "start:prod": "bun run dist/main.js",
-    "build": "nest build"
+    "start": "bun --bun src/main.ts",
+    "start:dev": "bun --bun --watch src/main.ts",
+    "start:prod": "bun --bun dist/main.js",
+    "build": "bun --bun nest build"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.1",

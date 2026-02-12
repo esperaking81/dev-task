@@ -10,123 +10,132 @@ DevTask helps developers manage their work more effectively by leveraging AI to 
 
 ### Backend
 
-- **NestJS** - Scalable Node.js framework
+- **NestJS** - Scalable Node.js framework (v11)
+- **Bun** - JavaScript runtime & package manager
 - **PostgreSQL** - Primary database
-- **TypeORM** - Database ORM
-- **JWT** - Authentication
+- **Prisma** - Type-safe Database ORM
+- **JWT/Passport** - Authentication
 
 ### Frontend (Web)
 
-- **Next.js** - React framework
+- **Next.js 16** - React framework (App Router)
+- **Bun** - JavaScript runtime & package manager
 - **TypeScript** - Type safety
-- **Tailwind CSS** - Styling
+- **Tailwind CSS v4** - Styling
+- **Radix UI** - Accessible UI components
+- **Zustand** - State management
 
-### Mobile (Coming Soon)
+### Mobile (Android)
 
-- **Flutter** - Cross-platform mobile framework
-- **Dart** - Programming language
-
-## Features
-
-- 🤖 **AI Task Breakdown** - Automatically decompose complex tasks into manageable subtasks
-- ✅ **Task Management** - Create, update, and track development tasks
-- 📊 **Progress Tracking** - Monitor task completion and project status
-- 🔐 **Authentication** - Secure user authentication and authorization
-- 📱 **Multi-platform** - Web app available now, mobile app coming soon
+- **Kotlin** - Native Android development
+- **Jetpack Compose** - Modern UI toolkit
+- **Koin** - Dependency Injection
+- **Ktor** - Networking client
+- **Room** - Local database
 
 ## Project Structure
 
 ```
 devtask/
-├── backend/          # NestJS API server
-├── frontend/         # Next.js web application
-└── mobile/          # Flutter mobile app (upcoming)
+├── backend/          # NestJS API server (Bun + Prisma)
+├── frontend/         # Next.js web application (Bun + Tailwind v4)
+└── DevTaskKMM/          # Native Android app (Kotlin + Compose Multiplatform)
 ```
 
 ## Getting Started
 
 ### Prerequisites
 
-- Node.js 18+
+- [Bun](https://bun.sh) (latest)
 - PostgreSQL 14+
-- pnpm/npm/yarn
+- Android Studio (for mobile app)
 - Docker (optional)
 
 ### Backend Setup
 
 ```bash
 cd backend
-npm install
-cp .env.example .env
-# Configure your environment variables
-npm run start:dev
+bun install
+# Create .env file (see Environment Variables section)
+# Run database migrations
+bun prisma migrate dev
+# Start development server
+bun run start:dev
 ```
 
 ### Frontend Setup
 
 ```bash
 cd frontend
-npm install
-cp .env.example .env.local
+bun install
+# Create .env.local file (see Environment Variables section)
 # Configure your environment variables
-npm run dev
+bun run dev
 ```
+
+### Mobile App Setup
+
+1. Open `DevTask/` in Android Studio.
+2. Sync Gradle project.
+3. Run on an emulator or physical device.
 
 ### Docker Setup (Optional)
 
 ```bash
-docker-compose up -d
+docker-compose -f compose.dev.yml up -d
 ```
 
 ## Environment Variables
 
-### Backend
+### Backend (.env)
 
 ```env
-DATABASE_URL=postgresql://user:password@localhost:5432/devtask
-JWT_SECRET=your-secret-key
-OPENAI_API_KEY=your-openai-key
+# Note: Port 5433 is used if running via docker-compose.dev.yml
+DATABASE_URL="postgresql://username:password@host:port/devtask_db?schema=public"
+JWT_SECRET="your-secret-key"
+PORT=4000
 ```
 
-### Frontend
+### Frontend (.env.local)
 
 ```env
-NEXT_PUBLIC_API_URL=http://localhost:3001
+NEXT_PUBLIC_API_URL="http://localhost:4000"
 ```
 
 ## API Documentation
 
-API documentation is available at `http://localhost:3001/api/docs` when running the backend in development mode.
+API documentation is available at `http://localhost:4000/api` when running the backend in development mode (Swagger UI).
 
-## Development
+## Development Commands
 
 ### Backend
 
 ```bash
-npm run start:dev     # Start development server
-npm run test          # Run tests
-npm run build         # Build for production
+bun run start:dev     # Start development server
+bun run test          # Run tests
+bun run build         # Build for production
+bun run lint          # Lint code
 ```
 
 ### Frontend
 
 ```bash
-npm run dev           # Start development server
-npm run build         # Build for production
-npm run lint          # Lint code
+bun run dev           # Start development server
+bun run build         # Build for production
+bun run lint          # Lint code
 ```
 
 ## Deployment
 
 ### Backend
 
-- Build: `npm run build`
-- Start: `npm run start:prod`
+- Build: `bun run build`
+- Start: `bun run start:prod` (or `node dist/main.js`)
 
 ### Frontend
 
-- Build: `npm run build`
-- Deploy to Vercel, Netlify, or your preferred platform
+- Build: `bun run build`
+- Deploy to Vercel, Netlify, or self-hosted Node.js/Bun server.
 
 ## Contributing
 
@@ -141,21 +150,3 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 ## License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
-
-## Roadmap
-
-- [x] Core task management
-- [x] AI task breakdown
-- [ ] Web application
-- [ ] Mobile application (Flutter)
-- [ ] Team collaboration features
-- [ ] Integration with GitHub/GitLab
-- [ ] Advanced AI features (task estimation, priority suggestions)
-
-## Contact
-
-For questions or support, please open an issue on GitHub.
-
----
-
-Built with ❤️ for developers who want to work smarter, not harder.

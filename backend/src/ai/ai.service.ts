@@ -10,8 +10,7 @@ export interface BreakdownSuggestion {
   order: number;
 }
 
-const getBaseUrl = () =>
-  process.env.ANTROPIC_URL || 'https://api.anthropic.com/v1';
+const getBaseUrl = () => process.env.ANTROPIC_URL;
 const getApiKey = () => process.env.ANTHROPIC_API_KEY;
 
 interface AnthropicRequest {
@@ -40,12 +39,10 @@ export class AiService {
     const baseUrl = getBaseUrl();
     const apiKey = getApiKey();
 
-    if (!apiKey) {
-      this.logger.error('ANTHROPIC_API_KEY environment variable is not set');
+    if (!apiKey || !baseUrl) {
+      this.logger.error('AI Provider environment variables are not set');
       return [];
     }
-
-    this.logger.log(`Using Anthropic API at: ${baseUrl}`);
 
     try {
       const prompt = this.buildPrompt(task);
