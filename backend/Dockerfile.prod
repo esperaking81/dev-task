@@ -1,0 +1,19 @@
+FROM oven/bun:alpine
+
+WORKDIR /usr/src/app
+
+# Install dependencies for development
+COPY package*.json ./
+
+RUN bun install
+
+# Copy source code (will be overridden by volume mount)
+COPY . .
+
+# Expose ports
+EXPOSE 4000
+
+RUN bun run build
+
+# Run in development mode with hot reload
+CMD ["bun", "run", "start:dev"]
