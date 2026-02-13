@@ -10,6 +10,12 @@ export interface BreakdownSuggestion {
   order: number;
 }
 
+<<<<<<< HEAD
+=======
+const getBaseUrl = () => process.env.ANTROPIC_URL;
+const getApiKey = () => process.env.ANTHROPIC_API_KEY;
+
+>>>>>>> 5fa09bd (Move to a KMM mobile app)
 interface AnthropicRequest {
   model: string;
   max_tokens: number;
@@ -36,11 +42,12 @@ export class AiService {
     const baseUrl = process.env.ANTHROPIC_BASE_URL;
     const apiKey = process.env.ANTHROPIC_API_KEY;
 
-    if (!apiKey) {
-      this.logger.error('ANTHROPIC_API_KEY environment variable is not set');
+    if (!apiKey || !baseUrl) {
+      this.logger.error('AI Provider environment variables are not set');
       return [];
     }
 
+<<<<<<< HEAD
     if (!baseUrl) {
       this.logger.error('ANTHROPIC_BASE_URL environment variable is not set');
       return [];
@@ -48,6 +55,8 @@ export class AiService {
 
     this.logger.log(`Using Anthropic API at: ${baseUrl}`);
 
+=======
+>>>>>>> 5fa09bd (Move to a KMM mobile app)
     try {
       const prompt = this.buildPrompt(task);
       const response = await this.callAnthropicAPI(prompt, apiKey);
