@@ -5,7 +5,7 @@ import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
 import cookieParser from 'cookie-parser';
 
 const port = process.env.PORT ?? 4000;
-const CORS_ORIGIN = process.env.CORS_ORIGIN ?? 'http://localhost:3000';
+const CORS_ORIGIN = process.env.CORS_ORIGIN;
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
